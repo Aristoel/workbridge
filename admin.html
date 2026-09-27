@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>WorkBridge Admin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #17202a;
+    }
+
+    .topbar {
+      background: #111827;
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    .logout {
+      border: 0;
+      background: #ef4444;
+      color: white;
+      padding: 9px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 25px 16px;
+    }
+
+    .login-box {
+      max-width: 420px;
+      margin: 70px auto;
+      background: white;
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 0 5px 25px rgba(0,0,0,.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .login-button {
+      width: 100%;
+      padding: 13px;
+      border: 0;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .message {
+      margin-top: 15px;
+      color: #dc2626;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin: 25px 0;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 15px rgba(0,0,0,.06);
+    }
+
+    .card-title {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .card-number {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .panel {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loginScreen" class="login-box">
+    <h1>WorkBridge Admin</h1>
+    <p>Sign in with your WorkBridge administrator account.</p>
+
+    <form id="loginForm">
+      <label>Email</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Admin email"
+        required
+      >
+
+      <label>Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+        required
+      >
+
+      <button class="login-button" type="submit">
+        Sign in
+      </button>
+    </form>
+
+    <div id="loginMessage" class="message"></div>
+  </div>
+
+
+  <div id="adminScreen" class="dashboard">
+
+    <div class="topbar">
+      <div class="brand">WorkBridge Admin</div>
+      <button class="logout" id="logoutButton">
+        Log out
+      </button>
+    </div>
+
+    <div class="container">
+
+      <h1>Dashboard</h1>
+
+      <p id="welcomeText">Loading administrator account...</p>
+
+      <div class="cards">
+
+        <div class="card">
+          <div class="card-title">Profiles</div>
+          <div class="card-number" id="profilesCount">0</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Businesses</div>
+          <div class="card-number" id="businessesCount">0</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Jobs</div>
+          <div class="card-number" id="jobsCount">0</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Applications</div>
+          <div class="card-number" id="applicationsCount">0</div>
+        </div>
+
+      </div>
+
+      <div class="panel">
+        <h2>Recent Profiles</h2>
+
+        <div id="profilesLoading" class="loading">
+          Loading...
+        </div>
+
+        <table id="profilesTable" style="display:none;">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Created</th>
+            </tr>
+          </thead>
+
+          <tbody id="profilesBody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+
+<script>
+
+  // ==========================================
+  // SUPABASE CONNECTION
+  // ==========================================
+
+  const SUPABASE_URL =
+    "https://vxvdglfabsmsddvzogp.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_7kuwYBvmznbUZzdQCPOAOw_eBiuj7Nv";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  // ==========================================
+  // ELEMENTS
+  // ==========================================
+
+  const loginScreen =
+    document.getElementById("loginScreen");
+
+  const adminScreen =
+    document.getElementById("adminScreen");
+
+  const loginForm =
+    document.getElementById("loginForm");
+
+  const loginMessage =
+    document.getElementById("loginMessage");
+
+  const logoutButton =
+    document.getElementById("logoutButton");
+
+
+  // ==========================================
+  // START
+  // ==========================================
+
+  checkSession();
+
+
+  // ==========================================
+  // CHECK LOGIN SESSION
+  // ==========================================
+
+  async function checkSession() {
+
+    const {
+      data: { session }
+    } = await supabaseClient.auth.getSession();
+
+    if (!session) {
+      showLogin();
+      return;
+    }
+
+    await verifyAdmin(session.user.id);
+  }
+
+
+  // ==========================================
+  // LOGIN
+  // ==========================================
+
+  loginForm.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    loginMessage.textContent = "Signing in...";
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const {
+      data,
+      error
+    } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      loginMessage.textContent =
+        error.message;
+      return;
+    }
+
+    await verifyAdmin(data.user.id);
+  });
+
+
+  // ==========================================
+  // VERIFY ADMIN
+  // ==========================================
+
+  async function verifyAdmin(userId) {
+
+    const {
+      data: profile,
+      error
+    } = await supabaseClient
+      .from("profiles")
+      .select("id, full_name, role")
+      .eq("id", userId)
+      .single();
+
+    if (error || !profile) {
+
+      await supabaseClient.auth.signOut();
+
+      showLogin();
+
+      loginMessage.textContent =
+        "Your account does not have a WorkBridge profile.";
+
+      return;
+    }
+
+    if (profile.role !== "admin") {
+
+      await supabaseClient.auth.signOut();
+
+      showLogin();
+
+      loginMessage.textContent =
+        "Access denied. Administrator privileges are required.";
+
+      return;
+    }
+
+    showAdmin(profile);
+  }
+
+
+  // ==========================================
+  // SHOW LOGIN
+  // ==========================================
+
+  function showLogin() {
+
+    loginScreen.style.display = "block";
+    adminScreen.style.display = "none";
+  }
+
+
+  // ==========================================
+  // SHOW ADMIN
+  // ==========================================
+
+  function showAdmin(profile) {
+
+    loginScreen.style.display = "none";
+    adminScreen.style.display = "block";
+
+    document.getElementById("welcomeText").textContent =
+      "Welcome, " + (profile.full_name || "Administrator");
+
+    loadDashboard();
+  }
+
+
+  // ==========================================
+  // LOAD DASHBOARD
+  // ==========================================
+
+  async function loadDashboard() {
+
+    await Promise.all([
+      loadCount("profiles", "profilesCount"),
+      loadCount("businesses", "businessesCount"),
+      loadCount("jobs", "jobsCount"),
+      loadCount("applications", "applicationsCount"),
+      loadProfiles()
+    ]);
+  }
+
+
+  // ==========================================
+  // LOAD COUNT
+  // ==========================================
+
+  async function loadCount(table, elementId) {
+
+    const {
+      count,
+      error
+    } = await supabaseClient
+      .from(table)
+      .select("*", {
+        count: "exact",
+        head: true
+      });
+
+    if (error) {
+      console.error(
+        "Count error:",
+        table,
+        error
+      );
+      return;
+    }
+
+    document.getElementById(elementId)
+      .textContent = count ?? 0;
+  }
+
+
+  // ==========================================
+  // LOAD PROFILES
+  // ==========================================
+
+  async function loadProfiles() {
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("profiles")
+      .select("full_name, role, created_at")
+      .order("created_at", {
+        ascending: false
+      })
+      .limit(20);
+
+    document.getElementById("profilesLoading")
+      .style.display = "none";
+
+    if (error) {
+
+      console.error(error);
+
+      return;
+    }
+
+    const body =
+      document.getElementById("profilesBody");
+
+    body.innerHTML = "";
+
+    data.forEach(function(profile) {
+
+      const row =
+        document.createElement("tr");
+
+      const name =
+        document.createElement("td");
+
+      name.textContent =
+        profile.full_name || "Unnamed";
+
+      const role =
+        document.createElement("td");
+
+      role.textContent =
+        profile.role || "user";
+
+      const created =
+        document.createElement("td");
+
+      created.textContent =
+        new Date(
+          profile.created_at
+        ).toLocaleString();
+
+      row.appendChild(name);
+      row.appendChild(role);
+      row.appendChild(created);
+
+      body.appendChild(row);
+    });
+
+    document.getElementById("profilesTable")
+      .style.display = "table";
+  }
+
+
+  // ==========================================
+  // LOGOUT
+  // ==========================================
+
+  logoutButton.addEventListener(
+    "click",
+    async function() {
+
+      await supabaseClient.auth.signOut();
+
+      showLogin();
+
+      loginForm.reset();
+    }
+  );
+
+</script>
+
+</body>
+  </html>
