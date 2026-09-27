@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorkBridge — Business & Job Marketplace</title>
+  <meta name="description" content="WorkBridge connects businesses with talented people looking for work.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo">Work<span>Bridge</span></a>
+
+      <nav>
+        <a href="#jobs">Find Jobs</a>
+        <a href="#businesses">Businesses</a>
+        <a href="#how">How It Works</a>
+      </nav>
+
+      <div class="nav-buttons">
+        <button class="btn btn-outline" onclick="showLogin()">Log In</button>
+        <button class="btn btn-primary" onclick="showSignup()">Get Started</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container hero-grid">
+
+        <div class="hero-content">
+          <div class="badge">● Connecting people with opportunity</div>
+
+          <h1>
+            Find the right work.
+            <span>Build something better.</span>
+          </h1>
+
+          <p>
+            WorkBridge is a business and job marketplace that connects
+            employers with people ready to work.
+          </p>
+
+          <div class="hero-buttons">
+            <button class="btn btn-primary btn-large" onclick="findJobs()">
+              Find a Job
+            </button>
+
+            <button class="btn btn-outline btn-large" onclick="postJob()">
+              Post a Job
+            </button>
+          </div>
+
+          <div class="stats">
+            <div>
+              <strong>10K+</strong>
+              <small>Job Seekers</small>
+            </div>
+            <div>
+              <strong>2K+</strong>
+              <small>Businesses</small>
+            </div>
+            <div>
+              <strong>5K+</strong>
+              <small>Jobs Posted</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="card-header">
+            <span>Featured Opportunities</span>
+            <span class="live">● LIVE</span>
+          </div>
+
+          <div class="job-preview">
+            <div class="job-icon">💼</div>
+            <div>
+              <h3>Business Operations Manager</h3>
+              <p>Full-time · Remote</p>
+              <strong>$65K – $85K</strong>
+            </div>
+          </div>
+
+          <div class="job-preview">
+            <div class="job-icon">💻</div>
+            <div>
+              <h3>Web Developer</h3>
+              <p>Contract · Remote</p>
+              <strong>$40 – $65/hr</strong>
+            </div>
+          </div>
+
+          <div class="job-preview">
+            <div class="job-icon">📊</div>
+            <div>
+              <h3>Marketing Specialist</h3>
+              <p>Full-time · Hybrid</p>
+              <strong>$55K – $70K</strong>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="search-section">
+      <div class="container">
+
+        <div class="search-box">
+          <input
+            type="text"
+            id="jobSearch"
+            placeholder="Search jobs, skills, or businesses..."
+          >
+
+          <select id="location">
+            <option value="">Any location</option>
+            <option>Remote</option>
+            <option>Miami</option>
+            <option>New York</option>
+            <option>Los Angeles</option>
+            <option>Chicago</option>
+          </select>
+
+          <button class="btn btn-primary" onclick="searchJobs()">
+            Search
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="jobs" class="section">
+      <div class="container">
+
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">OPPORTUNITIES</span>
+            <h2>Featured Jobs</h2>
+          </div>
+
+          <button class="text-button" onclick="findJobs()">
+            View all jobs →
+          </button>
+        </div>
+
+        <div class="jobs-grid">
+
+          <article class="job-card">
+            <div class="company-logo">AC</div>
+            <div class="job-info">
+              <span class="job-type">FULL-TIME</span>
+              <h3>Customer Success Manager</h3>
+              <p>Acme Corporation</p>
+              <div class="job-meta">
+                <span>📍 Remote</span>
+                <span>💰 $60K–$75K</span>
+              </div>
+            </div>
+            <button class="apply-btn" onclick="applyJob('Customer Success Manager')">
+              Apply
+            </button>
+          </article>
+
+          <article class="job-card">
+            <div class="company-logo">TS</div>
+            <div class="job-info">
+              <span class="job-type">CONTRACT</span>
+              <h3>Frontend Developer</h3>
+              <p>Tech Solutions</p>
+              <div class="job-meta">
+                <span>📍 Remote</span>
+                <span>💰 $55–$75/hr</span>
+              </div>
+            </div>
+            <button class="apply-btn" onclick="applyJob('Frontend Developer')">
+              Apply
+            </button>
+          </article>
+
+          <article class="job-card">
+            <div class="company-logo">GB</div>
+            <div class="job-info">
+              <span class="job-type">FULL-TIME</span>
+              <h3>Sales Representative</h3>
+              <p>Growth Brands</p>
+              <div class="job-meta">
+                <span>📍 Miami, FL</span>
+                <span>💰 $50K–$70K</span>
+              </div>
+            </div>
+            <button class="apply-btn" onclick="applyJob('Sales Representative')">
+              Apply
+            </button>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="businesses" class="business-section">
+      <div class="container">
+
+        <div class="section-heading center">
+          <span class="eyebrow">FOR BUSINESSES</span>
+          <h2>Build your team with WorkBridge</h2>
+          <p>
+            Post opportunities, discover qualified candidates, and grow your
+            business.
+          </p>
+        </div>
+
+        <div class="features">
+
+          <div class="feature">
+            <div class="feature-icon">📢</div>
+            <h3>Post Jobs</h3>
+            <p>Create job listings and reach people looking for their next opportunity.</p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🔎</div>
+            <h3>Find Talent</h3>
+            <p>Discover candidates based on skills, experience, and location.</p>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">🤝</div>
+            <h3>Connect</h3>
+            <p>Communicate with candidates and build professional relationships.</p>
+          </div>
+
+        </div>
+
+        <div class="business-cta">
+          <div>
+            <h3>Ready to hire?</h3>
+            <p>Create your business profile and start posting jobs.</p>
+          </div>
+
+          <button class="btn btn-primary" onclick="postJob()">
+            Start Hiring
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="how" class="section">
+      <div class="container">
+
+        <div class="section-heading center">
+          <span class="eyebrow">SIMPLE PROCESS</span>
+          <h2>How WorkBridge Works</h2>
+        </div>
+
+        <div class="steps">
+
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Create an account</h3>
+            <p>Sign up as a job seeker or business.</p>
+          </div>
+
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Discover opportunities</h3>
+            <p>Search jobs or find qualified candidates.</p>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Connect</h3>
+            <p>Apply, communicate, and build your next opportunity.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container footer-content">
+      <div>
+        <a href="#" class="logo">Work<span>Bridge</span></a>
+        <p>Business and Job Marketplace</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#jobs">Jobs</a>
+        <a href="#businesses">Businesses</a>
+        <a href="#how">How It Works</a>
+      </div>
+
+      <p>© 2026 WorkBridge</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+
+</body>
+      </html>
